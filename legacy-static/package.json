@@ -1,0 +1,9 @@
+{
+  "name": "pcm-explorateur-non-officiel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Auto-evaluation PCM exploratoire non officielle, statique et locale navigateur.",
+  "scripts": {
+    "test": "node scoring.test.js"
+  }
+}

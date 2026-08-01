@@ -3,3 +3,31 @@ Thumbs.db
 node_modules/
 *.log
 *.pdf
+
+# Build output
+dist/
+dist-ssr/
+*.local
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Test artifacts
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# Supabase local dev
+supabase/.branches
+supabase/.temp
+
+# Optional local-only seed fallback (see docs/SOURCE_MAPPING.md §4.4)
+supabase/seed/*.local.*

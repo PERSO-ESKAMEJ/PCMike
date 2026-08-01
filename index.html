@@ -1,37 +1,17 @@
 <!doctype html>
 <html lang="fr">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Auto-évaluation PCM exploratoire non officielle, statique et locale navigateur.">
-    <title>Explorateur PCM non officiel</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Outil experimental de connaissance de soi inspire de la logique des six types du PCM. Non officiel, non certifie."
+    />
+    <meta name="robots" content="index, follow" />
+    <title>Explorateur experimental inspire du PCM</title>
   </head>
   <body>
-    <header class="app-header">
-      <div>
-        <p class="eyebrow">Auto-évaluation exploratoire</p>
-        <h1>Structure PCM non officielle</h1>
-      </div>
-      <div class="header-actions">
-        <button class="ghost-button" type="button" data-action="import">Importer</button>
-        <button class="ghost-button" type="button" data-action="export">Exporter</button>
-        <button class="ghost-button" type="button" data-action="print">Imprimer</button>
-      </div>
-    </header>
-    <input id="importFile" type="file" accept="application/json" hidden>
-
-    <div class="progress-shell" aria-label="Progression du test">
-      <div class="progress-track">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-      <span id="progressLabel">0%</span>
-    </div>
-
-    <main id="app" class="app"></main>
-
-    <script src="data.js"></script>
-    <script src="scoring.js"></script>
-    <script src="app.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -1,0 +1,15 @@
+# Configuration du projet Supabase local (CLI). Voir docs/SUPABASE_SETUP.md pour le lien avec
+# un projet distant (`supabase link`) : ce fichier ne contient aucun secret.
+
+project_id = "pcm-experimental"
+
+[functions.submit-assessment]
+# Endpoint public : les candidats sont anonymes, aucun JWT Supabase Auth attendu. La protection
+# contre l'abus se fait par honeypot + duree minimale + validation stricte (voir index.ts), pas
+# par une exigence d'authentification.
+verify_jwt = false
+
+[functions.recalculate-submission]
+# Reserve a l'administrateur : le JWT Supabase Auth est verifie par la plateforme avant meme
+# d'entrer dans la fonction, qui verifie ensuite l'appartenance a admin_users.
+verify_jwt = true

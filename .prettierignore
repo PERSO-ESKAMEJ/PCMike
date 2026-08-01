@@ -1,0 +1,6 @@
+dist/
+legacy-static/
+coverage/
+playwright-report/
+test-results/
+supabase/seed/scoring_key.seed.sql
