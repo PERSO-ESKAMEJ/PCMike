@@ -51,7 +51,7 @@ export function computeConfidence(input: ConfidenceInput): Confidence {
 
   const level: ConfidenceLevel = isHigh ? "haute" : "moyenne";
   reasons.push(
-    `Écart de ${input.marginNormalized.toFixed(1)} points normalisés (≥ ${BASE_AMBIGUITY_THRESHOLD_NORMALIZED}).`
+    `Écart de ${input.marginNormalized.toFixed(1)} points normalisés (au moins ${BASE_AMBIGUITY_THRESHOLD_NORMALIZED} attendus).`
   );
   reasons.push(`Cohérence entre blocs secondaires : ${Math.round(input.blockCoherence * 100)}%.`);
   reasons.push(
