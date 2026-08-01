@@ -4,8 +4,11 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 if (!supabaseUrl || !supabasePublishableKey) {
-  // Fails fast in dev/build rather than silently issuing requests to "undefined".
-  // In production this should never happen if VITE_* variables are set by CI (see docs/DEPLOYMENT.md).
+  // Warn loudly, but do NOT let this crash module evaluation: `createClient` throws
+  // synchronously on an invalid URL, and this module is imported eagerly by the router (via
+  // RequireAdmin), so a throw here used to take down the *entire* SPA -- including the public
+  // candidate flow, which needs no Supabase config until the final submit. A placeholder URL
+  // keeps the client constructible; any real network call will simply fail visibly instead.
   console.error(
     "Variables Supabase manquantes (VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY). " +
       "Voir .env.example et docs/SUPABASE_SETUP.md."
@@ -22,9 +25,13 @@ if (!supabaseUrl || !supabasePublishableKey) {
 // exists in this environment to run `supabase gen types typescript --linked`. Once a project is
 // linked, regenerate real types into src/lib/database.types.ts and parametrize this client
 // (`createClient<Database>(...)`) for full compile-time query safety -- see docs/SUPABASE_SETUP.md.
-export const supabase = createClient(supabaseUrl ?? "", supabasePublishableKey ?? "", {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true
+export const supabase = createClient(
+  supabaseUrl || "https://placeholder.invalid",
+  supabasePublishableKey || "placeholder-key",
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true
+    }
   }
-});
+);
