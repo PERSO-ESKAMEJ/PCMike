@@ -34,7 +34,7 @@ import {
   argmax
 } from "./normalize.ts";
 import { computeConfidence } from "./confidence.ts";
-import { buildStructureFloors, applyPhaseAndPhasesVecues } from "./phases.ts";
+import { buildStructureFloors, applyPhaseAndPhasesVecues, reorderFloorsByReliability } from "./phases.ts";
 
 const ALL_BLOCK_IDS: BlockId[] = [
   "block1",
@@ -214,6 +214,12 @@ export function scoreAssessment(input: ScoreAssessmentInput): ScoringResult {
     block8NormalizedScores: normalizedByBlock.block8!
   });
   contradictions.push(...phaseContradictions);
+
+  // Reordonne l'affichage par fiabilite decroissante (Base en bas, puis les etages les plus
+  // fiables juste au-dessus -- Phases vecues confirmees et Phase actuelle en premier) :
+  // demande produit explicite, distincte de l'ordre structurel utilise ci-dessus pour calculer
+  // la trajectoire. `phasesVecues` reference les memes objets, donc reste coherent apres l'appel.
+  reorderFloorsByReliability(floors);
 
   const result: ScoringResult = {
     assessmentVersion: ASSESSMENT_VERSION,

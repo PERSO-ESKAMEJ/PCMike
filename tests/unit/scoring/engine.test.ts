@@ -87,6 +87,17 @@ describe("scoreAssessment - Phases vecues potentielles et confirmation", () => {
 
     expect(result.phasesVecues).toHaveLength(1);
     expect(result.phasesVecues[0]?.typeCode).toBe("EM");
+
+    // Ordre d'affichage : Base en bas (etage 1), puis par fiabilite decroissante -- la Phase
+    // vecue confirmee (100%, plus proche de la Base dans la trajectoire) juste au-dessus, puis
+    // la Phase actuelle (100%), puis le reste par pourcentage decroissant.
+    const displayOrder = result.structureBuilding.map((floor) => floor.typeCode);
+    expect(displayOrder).toEqual(["AN", "EM", "IM", "PE", "EN", "PR"]);
+    expect(result.structureBuilding.map((floor) => floor.floorIndex)).toEqual([1, 2, 3, 4, 5, 6]);
+    const percents = result.structureBuilding.map((floor) => floor.displayPercent);
+    for (let i = 1; i < percents.length; i += 1) {
+      expect(percents[i]).toBeLessThanOrEqual(percents[i - 1]);
+    }
   });
 
   it("ne confirme rien si la ligne de vie decrit une competence contextuelle plutot qu'un besoin profond", () => {

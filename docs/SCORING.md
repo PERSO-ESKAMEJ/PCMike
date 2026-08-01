@@ -58,9 +58,18 @@ explicite sur ce point) — voir `docs/SOURCE_MAPPING.md` §4.1–4.2.
 ## 4. Structure / immeuble (`src/scoring/phases.ts`)
 
 La Base occupe toujours l'étage 1 (rez-de-chaussée), quel que soit son classement dans le score de
-Structure. Les cinq autres types occupent les étages 2 à 6, ordonnés par leur score de Structure
-normalisé. Cette réconciliation entre le score de Base (blocs pondérés différemment) et le score
-de Structure est un choix produit documenté dans `docs/SOURCE_MAPPING.md` §4.1.
+Structure. Le calcul de la trajectoire (quels étages sont candidats Phase vécue, lequel est la
+Phase actuelle) utilise l'ordre **structurel** brut (score de Structure normalisé) — voir
+`docs/SOURCE_MAPPING.md` §4.1 pour la réconciliation entre score de Base et score de Structure.
+
+**Ordre d'affichage final** (`reorderFloorsByReliability`, appliqué après le calcul de
+trajectoire) : décroissant par fiabilité/pourcentage affiché, Base toujours en bas. Conséquence
+directe : une Phase vécue confirmée et la Phase actuelle (100% chacune) remontent immédiatement
+au-dessus de la Base, avant les étages simplement accessibles. En cas d'égalité à 100% entre une
+Phase vécue confirmée et la Phase actuelle, la Phase vécue passe en premier (plus proche de la
+Base dans la trajectoire réelle). C'est une exigence produit explicite, distincte du calcul de
+trajectoire lui-même : le `floorIndex` final reflète donc cet ordre d'affichage, pas la position
+structurelle brute.
 
 ## 5. Phase actuelle
 

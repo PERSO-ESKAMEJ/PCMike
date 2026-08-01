@@ -126,6 +126,35 @@ export function applyPhaseAndPhasesVecues(input: ApplyPhaseInput): ApplyPhaseRes
   return { floors, phasesVecues, contradictions };
 }
 
+/**
+ * Reordonne l'affichage de l'immeuble par ordre decroissant de pourcentage/fiabilite, la Base
+ * restant toujours en rez-de-chaussee. Consequence naturelle : une Phase vecue confirmee ou la
+ * Phase actuelle (100%) remontent juste au-dessus de la Base, avant les etages simplement
+ * accessibles -- demande explicite du produit, distincte du calcul de trajectoire lui-meme
+ * (qui doit rester base sur l'ordre structurel brut, voir applyPhaseAndPhasesVecues).
+ *
+ * Mute `floors` EN PLACE (le tableau lui-meme, via splice, pas seulement les objets qu'il
+ * contient) : toute reference existante au meme tableau (ex. `result.structureBuilding` dans
+ * engine.ts) voit donc le nouvel ordre, et les references aux objets individuels (ex. le
+ * tableau `phasesVecues` retourne par applyPhaseAndPhasesVecues) restent a jour egalement.
+ */
+export function reorderFloorsByReliability(floors: BuildingFloor[]): BuildingFloor[] {
+  const [baseFloor, ...others] = floors;
+  others.sort((a, b) => {
+    if (b.displayPercent !== a.displayPercent) return b.displayPercent - a.displayPercent;
+    // A egalite d'affichage (ex. Phase actuelle et une Phase vecue confirmee, toutes deux a
+    // 100%), l'etage le plus proche de la Base dans la trajectoire reelle passe en premier.
+    return a.floorIndex - b.floorIndex;
+  });
+
+  const reordered = baseFloor ? [baseFloor, ...others] : others;
+  reordered.forEach((floor, index) => {
+    floor.floorIndex = index + 1;
+  });
+  floors.splice(0, floors.length, ...reordered);
+  return floors;
+}
+
 export function allTypeCodesCovered(floors: BuildingFloor[]): boolean {
   const covered = new Set(floors.map((floor) => floor.typeCode));
   return TYPE_CODES.every((type) => covered.has(type));
