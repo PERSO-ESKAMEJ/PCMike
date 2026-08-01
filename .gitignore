@@ -31,3 +31,7 @@ supabase/.temp
 
 # Optional local-only seed fallback (see docs/SOURCE_MAPPING.md §4.4)
 supabase/seed/*.local.*
+
+# Scratch copies used for manual dashboard setup (contains the private scoring key) -- never
+# commit, see docs/SUPABASE_SETUP.md
+.tmp-setup/

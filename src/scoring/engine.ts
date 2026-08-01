@@ -16,7 +16,7 @@ import type {
   TypeCode,
   TypeScoreBoard
 } from "./types.ts";
-import { TYPE_CODES } from "./types.ts";
+import { TYPE_CODES, TYPE_NAMES } from "./types.ts";
 import {
   ASSESSMENT_VERSION,
   SCORING_VERSION,
@@ -161,7 +161,7 @@ export function scoreAssessment(input: ScoreAssessmentInput): ScoringResult {
   if (baseMargin < BASE_AMBIGUITY_THRESHOLD_NORMALIZED) {
     contradictions.push({
       code: "base_ambigue",
-      message: `Base à confirmer : écart de ${baseMargin.toFixed(1)} points normalisés entre ${baseTypeCode} et ${baseAlternative ?? "le second candidat"} (< ${BASE_AMBIGUITY_THRESHOLD_NORMALIZED}).`
+      message: `Base à confirmer : écart de ${baseMargin.toFixed(1)} points normalisés entre ${TYPE_NAMES[baseTypeCode]} et ${baseAlternative ? TYPE_NAMES[baseAlternative] : "le second candidat"} (< ${BASE_AMBIGUITY_THRESHOLD_NORMALIZED}).`
     });
   }
 
@@ -184,7 +184,7 @@ export function scoreAssessment(input: ScoreAssessmentInput): ScoringResult {
   if (!phaseAgrees) {
     contradictions.push({
       code: "phase_besoins_stress_divergents",
-      message: `Les besoins actuels (bloc 6) désignent ${needsTopType} tandis que le stress actuel (bloc 7) désigne ${stressTopType} : Phase actuelle incertaine, non tranchée arbitrairement.`
+      message: `Les besoins actuels (bloc 6) désignent ${TYPE_NAMES[needsTopType]} tandis que le stress actuel (bloc 7) désigne ${TYPE_NAMES[stressTopType]} : Phase actuelle incertaine, non tranchée arbitrairement.`
     });
   }
 

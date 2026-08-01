@@ -1,5 +1,5 @@
 import type { BuildingFloor, Contradiction, PhaseHistoryAnswer, TypeCode } from "./types.ts";
-import { TYPE_CODES } from "./types.ts";
+import { TYPE_CODES, TYPE_NAMES } from "./types.ts";
 import { sortTypesByScoreDesc } from "./normalize.ts";
 import {
   PHASE_VECUE_WEIGHTS,
@@ -92,9 +92,9 @@ export function applyPhaseAndPhasesVecues(input: ApplyPhaseInput): ApplyPhaseRes
       contradictions.push({
         code: "phase_vecue_hors_trajectoire",
         message:
-          `La ligne de vie declaree pointe vers ${input.phaseHistory.typeCode}, qui n'est pas ` +
-          `un etage intermediaire entre la Base (${input.baseTypeCode}) et la Phase actuelle ` +
-          `(${input.phaseTypeCode}) dans la Structure calculee. Incoherence signalee plutot que forcee.`
+          `La ligne de vie declaree pointe vers ${TYPE_NAMES[input.phaseHistory.typeCode]}, qui n'est pas ` +
+          `un etage intermediaire entre la Base (${TYPE_NAMES[input.baseTypeCode]}) et la Phase actuelle ` +
+          `(${TYPE_NAMES[input.phaseTypeCode]}) dans la Structure calculee. Incoherence signalee plutot que forcee.`
       });
     } else {
       const block8Component = input.block8NormalizedScores[matchingFloor.typeCode] / 100;
@@ -112,7 +112,7 @@ export function applyPhaseAndPhasesVecues(input: ApplyPhaseInput): ApplyPhaseRes
         contradictions.push({
           code: "phase_vecue_competence_contextuelle",
           message:
-            `La periode declaree pour ${matchingFloor.typeCode} est identifiee comme une ` +
+            `La periode declaree pour ${TYPE_NAMES[matchingFloor.typeCode]} est identifiee comme une ` +
             "competence imposee par le contexte plutot qu'un besoin profond : non retenue comme Phase vecue confirmee."
         });
       } else if (score >= PHASE_VECUE_CONFIRMATION_THRESHOLD) {

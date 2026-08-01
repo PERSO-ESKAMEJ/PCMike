@@ -198,6 +198,79 @@ describe("scoreAssessment - cas limites", () => {
   });
 });
 
+describe("scoreAssessment - aucune fuite de code interne dans les messages", () => {
+  // Regression : un premier rapport genere en conditions reelles laissait passer "AN"/"EN" bruts
+  // dans le texte de contradiction ("besoins actuels designent AN..."), en violation directe de
+  // la mission (§3.3) qui interdit d'exposer les codes internes au candidat -- le rapport PDF
+  // etant destine a lui etre transmis. Verifie que chaque type de contradiction produit un
+  // message en langage naturel, sans code brut a deux lettres.
+  const CODE_PATTERN = /\b(AN|PE|EM|IM|EN|PR)\b/;
+
+  function assertNoLeakedCode(message: string) {
+    expect(message).not.toMatch(CODE_PATTERN);
+  }
+
+  it("base_ambigue : pas de code brut", () => {
+    const answers = buildAmbiguousBaseAnswers("AN", "PE");
+    const result = scoreAssessment({ items, answers, scoringKey, phaseHistory: null });
+    const contradiction = result.contradictions.find((c) => c.code === "base_ambigue");
+    expect(contradiction).toBeDefined();
+    assertNoLeakedCode(contradiction!.message);
+  });
+
+  it("phase_besoins_stress_divergents : pas de code brut", () => {
+    const structureOrder = ["AN", "PE", "EM", "IM", "EN", "PR"] as const;
+    const needsOrder = ["EN", "AN", "PE", "EM", "IM", "PR"] as const;
+    const stressOrder = ["PR", "AN", "PE", "EM", "IM", "EN"] as const;
+    const answers = buildFullOrderAnswers((blockId) => {
+      if (blockId === "block6") return [...needsOrder];
+      if (blockId === "block7") return [...stressOrder];
+      return [...structureOrder];
+    });
+    const result = scoreAssessment({ items, answers, scoringKey, phaseHistory: null });
+    const contradiction = result.contradictions.find(
+      (c) => c.code === "phase_besoins_stress_divergents"
+    );
+    expect(contradiction).toBeDefined();
+    assertNoLeakedCode(contradiction!.message);
+  });
+
+  it("phase_vecue_hors_trajectoire : pas de code brut", () => {
+    const structureOrder = ["AN", "PE", "EM", "IM", "EN", "PR"] as const;
+    const phaseOrder = ["IM", "AN", "PE", "EM", "EN", "PR"] as const;
+    const answers = buildFullOrderAnswers((blockId) => {
+      if (blockId === "block6" || blockId === "block7") return [...phaseOrder];
+      return [...structureOrder];
+    });
+    // Base=AN (etage 1), Phase=IM (etage 4), etages intermediaires = PE, EM. "PR" est hors de
+    // cette plage : declenche bien la contradiction.
+    const phaseHistory = makePhaseHistory({ typeCode: "PR" });
+    const result = scoreAssessment({ items, answers, scoringKey, phaseHistory });
+    const contradiction = result.contradictions.find(
+      (c) => c.code === "phase_vecue_hors_trajectoire"
+    );
+    expect(contradiction).toBeDefined();
+    assertNoLeakedCode(contradiction!.message);
+  });
+
+  it("phase_vecue_competence_contextuelle : pas de code brut", () => {
+    const structureOrder = ["AN", "PE", "EM", "IM", "EN", "PR"] as const;
+    const phaseOrder = ["IM", "AN", "PE", "EM", "EN", "PR"] as const;
+    const answers = buildFullOrderAnswers((blockId) => {
+      if (blockId === "block6" || blockId === "block7" || blockId === "block8")
+        return [...phaseOrder];
+      return [...structureOrder];
+    });
+    const phaseHistory = makePhaseHistory({ typeCode: "EM", deepNeed: false });
+    const result = scoreAssessment({ items, answers, scoringKey, phaseHistory });
+    const contradiction = result.contradictions.find(
+      (c) => c.code === "phase_vecue_competence_contextuelle"
+    );
+    expect(contradiction).toBeDefined();
+    assertNoLeakedCode(contradiction!.message);
+  });
+});
+
 describe("scoreAssessment - preuves conservees", () => {
   it("conserve une trace (evidence) exploitable pour chaque option classee", () => {
     const answers = buildDominantAnswers("AN");

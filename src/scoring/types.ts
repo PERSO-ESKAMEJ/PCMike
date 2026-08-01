@@ -8,6 +8,23 @@ export type TypeCode = "AN" | "PE" | "EM" | "IM" | "EN" | "PR";
 
 export const TYPE_CODES: readonly TypeCode[] = ["AN", "PE", "EM", "IM", "EN", "PR"];
 
+/**
+ * Nom d'affichage minimal (pas le contenu narratif complet, qui vit dans
+ * src/reports/content/typeProfiles.ts). Existe pour que le moteur puisse composer des messages
+ * de contradiction lisibles SANS jamais exposer un code interne (AN/PE/EM/IM/EN/PR) dans un
+ * texte qui peut atteindre le candidat via le rapport PDF -- voir mission §3.3 et le bug corrige
+ * en pratique : un premier rapport genere en test laissait passer "AN"/"EN" bruts dans la
+ * synthese avant ce correctif.
+ */
+export const TYPE_NAMES: Record<TypeCode, string> = {
+  AN: "Analyseur",
+  PE: "Persévérant",
+  EM: "Empathique",
+  IM: "Imagineur",
+  EN: "Énergiseur",
+  PR: "Promoteur"
+};
+
 export type BlockId =
   "block1" | "block2" | "block3" | "block4" | "block5" | "block6" | "block7" | "block8";
 
